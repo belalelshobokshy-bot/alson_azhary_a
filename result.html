@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيانات الطالب | مدرسة الألسن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --dark: #03045E; --blue: #0077B6; --gold: #FFD700; --white: #ffffff; --gray: #6c757d; }
+        
+        body { font-family: 'Cairo', sans-serif; background: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .result-card { background: var(--white); width: 95%; max-width: 500px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: hidden; position: relative; }
+        
+        /* شريط علوي جمالي */
+        .card-header { background: var(--dark); color: white; padding: 25px; text-align: center; }
+        .card-header h2 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; }
+        
+        .content { padding: 30px; }
+        
+        /* تنسيق الأسطر */
+        .info-box { display: flex; align-items: center; background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-right: 5px solid var(--blue); }
+        .info-box i { color: var(--blue); margin-left: 15px; font-size: 1.2rem; }
+        .info-label { flex: 1; font-weight: bold; color: #555; }
+        .info-value { font-weight: 700; color: var(--dark); }
+
+        /* صندوق النتيجة النهائي */
+        .score-container { background: linear-gradient(135deg, var(--blue), var(--dark)); color: white; padding: 25px; border-radius: 20px; text-align: center; margin-top: 20px; transition: 0.3s; }
+        .score-title { font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; display: block; }
+        .score-number { font-size: 3rem; font-weight: 800; display: block; line-height: 1; }
+        .grade-text { font-size: 1.1rem; margin-top: 10px; display: block; font-weight: bold; }
+
+        /* الأزرار */
+        .actions { padding: 0 30px 30px; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-print { background: var(--blue); color: white; }
+        .btn-back { background: #eee; color: #333; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        /* إخفاء العناصر عند التحميل */
+        .hidden { display: none; }
+        #loader { text-align: center; padding: 50px; }
+
+        @media print {
+            .actions, .btn-back { display: none; }
+            body { background: white; }
+            .result-card { box-shadow: none; border: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="result-card">
+        <div class="card-header">
+            <h2><i class="fas fa-graduation-cap"></i>  بوابة نتائج الألسن الأزهري لغات</h2>
+        </div>
+
+        <div id="loader">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--blue);"></i>
+            <p>جاري جلب بياناتك من الخادم...</p>
+        </div>
+
+        <div class="content hidden" id="main-content">
+            <div class="info-box">
+                <i class="fas fa-user"></i>
+                <span class="info-label">الاسم:</span>
+                <span class="info-value" id="disp-name">---</span>
+            </div>
+
+            <div class="info-box">
+                <i class="fas fa-id-card"></i>
+                <span class="info-label">كود الدخول:</span>
+                <span class="info-value" id="disp-id">---</span>
+            </div>
+
+            <div class="info-box">
+                <i class="fas fa-chair"></i>
+                <span class="info-label">رقم الجلوس:</span>
+                <span class="info-value" id="disp-seat">---</span>
+            </div>
+
+            <div class="score-container" id="score-box">
+                <span class="score-title">النتيجة النهائية</span>
+                <span class="score-number" id="disp-score">--</span>
+                <span class="grade-text" id="disp-grade">جاري التقييم...</span>
+            </div>
+        </div>
+
+        <div class="actions hidden" id="action-btns">
+            <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+            <button class="btn btn-back" onclick="location.href='home.html'"><i class="fas fa-home"></i> الرئيسية</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    // 1. إعدادات الفايربيز - (تم تصحيح الرابط للمشروع الجديد alson-4492f)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCV9yFJToGTbDbm2xsYfU91i6odDgRzccg",
+        databaseURL: "https://alson-4492f-default-rtdb.firebaseio.com/" // تم التعديل هنا
+    };
+    
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // 2. توحيد طريقة الحصول على الكود
+    const studentId = localStorage.getItem("current_student_id");
+
+    // 3. التحقق من وجود الجلسة
+    if (!studentId) {
+        alert("⚠️ جلسة الدخول انتهت، يرجى إعادة تسجيل الدخول.");
+        window.location.replace("login.html"); 
+    } else {
+        fetchStudentData(studentId);
+    }
+
+    function fetchStudentData(id) {
+        // استخدمنا .on عشان النتيجة تتحدث لحظياً لو الأدمن عدلها وهو الطالب فاتح
+        database.ref('students/' + id).on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                
+                // إظهار المحتوى وإخفاء اللودر
+                if(document.getElementById('loader')) document.getElementById('loader').classList.add('hidden');
+                if(document.getElementById('main-content')) document.getElementById('main-content').classList.remove('hidden');
+                if(document.getElementById('action-btns')) document.getElementById('action-btns').classList.remove('hidden');
+
+                // عرض الاسم والكود
+                document.getElementById('disp-name').innerText = data.name || data.full_name || "غير مسجل";
+                document.getElementById('disp-id').innerText = id;
+
+                // معالجة رقم الجلوس
+                const seat = data.seat_number;
+                document.getElementById('disp-seat').innerText = (seat && seat !== '---') ? seat : "لم يحدد بعد";
+
+                // --- 🛡️ معالجة الدرجة (score أو total_score) ---
+                const scoreBox = document.getElementById('score-box');
+                // هنا بنقرأ المسميين عشان نضمن الظهور
+                const score = data.score || data.total_score;
+
+                if (score === undefined || score === null || score === "" || score === 0 || score === "0") {
+                    document.getElementById('disp-score').innerText = "⏳"; 
+                    document.getElementById('disp-grade').innerText = "النتيجة قريباً";
+                    if(scoreBox) scoreBox.style.background = "linear-gradient(135deg, #6c757d, #343a40)";
+                } else {
+                    document.getElementById('disp-score').innerText = score + "%";
+                    
+                    if (parseFloat(score) >= 50) {
+                        document.getElementById('disp-grade').innerHTML = "ناجح وموفق 🌟";
+                        if(scoreBox) scoreBox.style.background = "linear-gradient(135deg, #28a745, #155724)";
+                    } else {
+                        document.getElementById('disp-grade').innerHTML = "دور ثانٍ / لم يحالفك الحظ ❌";
+                        if(scoreBox) scoreBox.style.background = "linear-gradient(135deg, #dc3545, #721c24)";
+                    }
+                }
+            } else {
+                alert("خطأ: لم نتمكن من العثور على بياناتك.");
+                window.location.replace("login.html");
+            }
+        }, (err) => {
+            console.error(err);
+            alert("حدث خطأ في الاتصال بقاعدة البيانات.");
+        });
+    }
+</script>
+</body>
+</html>

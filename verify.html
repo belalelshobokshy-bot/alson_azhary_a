@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد الهوية | مدرسة الألسن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { --bg: #03045E; --card: #ffffff; --btn: #0077B6; --resend: #28a745; --choice: #FF9F1C; }
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(45deg, #03045E, #0077B6); height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
+        .verify-card { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; width: 90%; max-width: 400px; }
+        .otp-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; text-align: center; font-size: 2rem; font-weight: bold; letter-spacing: 10px; outline: none; margin: 20px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 12px; background: var(--btn); color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-bottom: 10px; transition: 0.3s; }
+        button:hover { transform: scale(1.02); opacity: 0.9; }
+        .btn-resend { background: var(--resend); font-size: 1rem; }
+        .btn-admin { background: var(--bg); }
+        .btn-index { background: var(--choice); color: #fff; }
+        #timer { margin-top: 15px; color: red; font-weight: bold; }
+        .hidden { display: none; }
+        .choice-box { margin-top: 20px; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ================================================= */
+/* الميديا كويري لصفحة تأكيد الهوية (OTP)            */
+/* ================================================= */
+
+@media (max-width: 600px) {
+    body {
+        /* إضافة حشو علوي وسفلي عشان الكيبورد متغطيش الكارت */
+        padding: 20px 0;
+        height: auto; 
+        min-height: 100vh;
+    }
+
+    .verify-card {
+        width: 85%;
+        padding: 30px 20px;
+        border-radius: 20px;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* ضبط خانة الـ OTP لتناسب عرض الموبايل */
+    .otp-input {
+        font-size: 1.6rem; /* تصغير الخط قليلاً ليناسب العرض */
+        letter-spacing: 5px; /* تقليل المسافات بين الأرقام لعدم الخروج عن الإطار */
+        padding: 12px;
+        margin: 15px 0;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .btn-resend {
+        font-size: 0.9rem;
+    }
+
+    #timer {
+        font-size: 0.9rem;
+    }
+}
+
+/* للموبايلات الصغيرة جداً (مثل iPhone SE) */
+@media (max-width: 360px) {
+    .verify-card {
+        width: 90%;
+        padding: 20px 15px;
+    }
+
+    .otp-input {
+        font-size: 1.4rem;
+        letter-spacing: 3px;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* حل مشكلة ظهور الكيبورد في الوضع الأفقي */
+@media (max-height: 450px) {
+    .verify-card {
+        margin: 20px 0;
+    }
+    .otp-input {
+        margin: 10px 0;
+        padding: 8px;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="verify-card">
+        <h2>🔒 تأكيد المدير</h2>
+        
+        <div id="otp-section">
+            <p>أدخل الشفرة المرسلة إلى:<br><strong style="color: #0077B6;">kholoudabdalhalim.elearning@gmail.com</strong></p>
+            <input type="text" id="otpCode" class="otp-input" placeholder="000000" maxlength="6">
+            <button onclick="validateOTP()">تأكيد الشفرة</button>
+            <button class="btn-resend" onclick="resendOTP()">إرسال شفرة جديدة الآن 📧</button>
+            <div id="timer">تنتهي الصلاحية خلال: <span id="time">03:00</span></div>
+        </div>
+
+        <div id="choice-section" class="hidden choice-box">
+            <h3 style="color: var(--resend);">✅ تم التحقق بنجاح</h3>
+            <p>أين تريد الذهاب الآن؟</p>
+            <button class="btn-admin" onclick="location.href='admin.html'">لوحة تحكم الإدارة ⚙️</button>
+            <button class="btn-index" onclick="location.href='index.html'">رئيسية الموقع (طالب) 🏠</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script>
+    // تفعيل المكتبة بالـ Public Key بتاعك (تأكد إنه سليم)
+    emailjs.init("lP4pr1jYofFZYMWtL");
+
+    let correctOTP = sessionStorage.getItem("pending_otp");
+    let timeLeft = 180;
+
+    // بقية كود السكريبت بتاعك زي ما هو بدون أي تغيير...
+
+    const countdown = setInterval(() => {
+        let min = Math.floor(timeLeft / 60);
+        let sec = timeLeft % 60;
+        const timerElement = document.getElementById('time');
+        if(timerElement) {
+            timerElement.innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+        }
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("انتهت صلاحية الشفرة، يرجى طلب واحدة جديدة");
+        }
+        timeLeft--;
+    }, 1000);
+
+    function validateOTP() {
+        const userInput = document.getElementById('otpCode').value.trim();
+        if (userInput === correctOTP) {
+            // منح صلاحية الأدمن الرسمية للمتصفح
+            sessionStorage.setItem("admin_authorized", "true");
+            
+            // تنظيف الذاكرة المؤقتة للأمان
+            sessionStorage.removeItem("pending_otp");
+            
+            alert("✅ تم التحقق بنجاح! جاري تحويلك إلى لوحة التحكم...");
+            window.location.href = "admin.html"; 
+        } else {
+            alert("❌ الشفرة خاطئة! يرجى إعادة المحاولة.");
+        }
+    }
+
+    function resendOTP() {
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        const params = { 
+            otp_code: newOtp, 
+            to_email: "kholoudabdalhalim.elearning@gmail.com" 
+        };
+
+        emailjs.send('service_xv50nrg', 'template_plspney', params)
+            .then(() => {
+                correctOTP = newOtp;
+                sessionStorage.setItem("pending_otp", newOtp); // تحديث المخزن
+                alert("📧 تم إرسال شفرة جديدة بنجاح إلى إيميل المديرة!");
+                timeLeft = 180; 
+            }, (err) => {
+                alert("⚠️ فشل الإرسال: تأكد من اتصالك بالإنترنت");
+            });
+    }
+</script>
+</body>

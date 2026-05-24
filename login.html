@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة التسجيل | Alson School</title>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* 1. Global Variables */
+        :root {
+            --primary-bg: #03045E;
+            --card-bg: #ffffff;
+            --btn-color: #0077B6;
+            --btn-hover: #00B4D8;
+            --text-main: #333;
+            --text-white: #ffffff;
+            --border-color: #ccc;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 2. Base Styles */
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--primary-bg); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: var(--text-white); 
+        }
+
+        /* 3. Card & Form Elements */
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 15px; 
+            color: var(--text-main); 
+            text-align: center; 
+            width: 350px; 
+            box-shadow: var(--shadow);
+        }
+
+        h2 { margin-bottom: 20px; color: var(--primary-bg); }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--btn-color); 
+            color: var(--text-white); 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s ease;
+        }
+
+        button:hover { background: var(--btn-hover); }
+
+        .hidden { display: none; }
+
+        /* 4. Responsive Design (Mobile Optimization) */
+        @media (max-width: 768px) {
+            body { padding: 0 20px; }
+            .card { width: 100%; max-width: 340px; padding: 25px 20px; }
+            h2 { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 400px) {
+            .card { max-width: 300px; }
+            h2 { font-size: 1.3rem; }
+        }
+
+        /* Support for Landscape Mode */
+        @media (max-height: 500px) {
+            body { height: auto; padding: 40px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>مدرسة الألسن</h2>
+        
+        <div id="login-section">
+            <p>أدخل كود الطالب</p>
+            <input type="password" id="userId" placeholder="******" maxlength="10">
+            <button onclick="processLogin()">دخول</button>
+        </div>
+
+        <div id="otp-section" class="hidden">
+            <p>أدخل كود التحقق (المدير)</p>
+            <input type="text" id="otpInput" placeholder="000000">
+            <button onclick="verifyAdminOTP()">تأكيد</button>
+        </div>
+
+        <p id="status" style="margin-top: 15px; font-size: 0.9rem;"></p>
+    </div>
+
+    <script>
+        // 1. Firebase Configuration & Initialization
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCV9yFJToGTbDbm2xsYfU91i6odDgRzccg", 
+            databaseURL: "https://alson-4492f-default-rtdb.firebaseio.com/"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // 2. EmailJS Initialization
+        emailjs.init("lP4pr1jYofFZYMWtL");
+
+        /**
+         * Main Login Process Logic
+         */
+        function processLogin() {
+            const studentId = document.getElementById('userId').value.trim();
+            const statusMsg = document.getElementById('status');
+
+            if (!studentId) {
+                alert("⚠️ عذراً، يجب إدخال كود الطالب أولاً!");
+                return; 
+            }
+
+            // Redirect to Admin Flow if Manager ID is used
+            if (studentId === "202600") { 
+                sendAdminEmail(); 
+                return;
+            }
+
+            statusMsg.innerText = "⏳ جاري التحقق من البيانات...";
+
+            // Check student ID in Firebase Database
+            database.ref('students/' + studentId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        handleStudentSession(studentId, snapshot.val());
+                    } else {
+                        statusMsg.innerText = "";
+                        alert(`❌ هذا الكود (${studentId}) غير مسجل لدينا.`);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Database Error:", error);
+                    alert("🌐 حدث خطأ في الاتصال بالخادم");
+                });
+        }
+
+        /**
+         * Handles successful data retrieval and session management
+         */
+        /**
+         * دالة معالجة الجلسة - تمنع الدخول المتعدد من جهازين
+         */
+        function handleStudentSession(id, data) {
+            const statusMsg = document.getElementById('status');
+
+            // 🛡️ الحماية: لو الكود مستخدم بالفعل (true)، ارفض الدخول فوراً
+            if (data.is_used === true || data.is_used === "true") {
+                if(statusMsg) statusMsg.innerText = "❌ هذا الكود مستخدم حالياً على جهاز آخر!";
+                alert("⚠️ عذراً! هذا الكود مسجل دخول بالفعل من جهاز آخر، لقد انتهت صلاحيته .");
+                return; // إيقاف الدالة ومنع الدخول لصفحة النتيجة
+            }
+
+            // لو الكود غير مستخدم، يكمل الدخول طبيعي
+            const studentName = data.name || data.full_name || "يا بطل";
+
+            localStorage.setItem("current_student_id", id);
+            localStorage.setItem("student_name", studentName);
+            
+            if(statusMsg) statusMsg.innerText = "⏳ جاري حفظ البيانات وتأمين الحساب...";
+
+            // قفل الكود في الفايربيز لحمايته
+            database.ref('students/' + id).update({
+                is_used: true,
+                login_time: new Date().toLocaleString()
+            }).then(() => {
+                if(statusMsg) statusMsg.innerText = "✅ تم التسجيل بنجاح";
+                setTimeout(() => {
+                    window.location.replace("home.html"); 
+                }, 500);
+            });
+        }
+
+        /**
+         * Sends OTP to Admin Email via EmailJS
+         */
+        function sendAdminEmail() {
+            const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            sessionStorage.setItem("pending_otp", generatedOTP);
+
+            emailjs.send('service_guo6dgg', 'template_plspney', { 
+               otp_code: generatedOTP, 
+               to_email: "kholoudabdalhalim.elearning@gmail.com" 
+})
+            .then(() => {
+                window.location.href = "verify.html";
+            })
+            .catch((err) => {
+                console.error("EmailJS Error:", err);
+                alert("فشل إرسال الإيميل للمدير");
+            });
+        }
+    </script>
+</body>
+</html>

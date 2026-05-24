@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="main-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="تاريخ مدرسة الألسن الأزهري" data-en="Al-Alson Azhari School History">تاريخ مدرسة الألسن الأزهري</title>
+    <link rel="icon" href="logo.png" >
+    <style>
+        /* 1. المتغيرات والأساسيات */
+:root {
+    --dark-blue: #03045E;
+    --ocean-blue: #0077B6;
+    --sky-blue: #00B4D8;
+    --white-blue: #CAF0F8;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: var(--white-blue);
+    color: var(--dark-blue);
+    line-height: 1.6;
+}
+
+/* 2. شريط التنقل (Navigation) */
+/* ================= شريط التنقل (توسيط كامل) ================= */
+nav {
+    background: #03045E;
+    padding: 15px 5%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    direction: rtl;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* قطعة التوازن والروابط */
+.nav-spacer, .nav-actions {
+    flex: 0 0 140px; /* ضمان توازن الطرفين لتوسيط النص */
+    display: flex;
+}
+
+.nav-actions {
+    justify-content: flex-end;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    flex: 1;
+}
+
+.nav-links li a {
+    color: white !important;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+/* تأثير الخط المتحرك تحت اللينكات */
+.nav-links li a {
+    position: relative;
+}
+
+.nav-links li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    right: 0;
+    background-color: #00B4D8;
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-links li a:hover::after {
+    width: 100%;
+}
+
+.nav-links li a:hover {
+    color: #00B4D8 !important;
+    transform: translateY(-2px);
+    display: inline-block;
+}
+
+/* ================= القائمة الجانبية (نفس الكود الذي قدمته) ================= */
+.side-menu {
+    height: 100vh;
+    width: 0; 
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    right: 0;
+    background-color: #03045E;
+    overflow-x: hidden;
+    transition: 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 80px;
+    visibility: hidden;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+}
+
+.side-menu.active {
+    width: 280px;
+    visibility: visible;
+}
+
+.side-menu a {
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 20px;
+    width: 100%;
+    text-align: right;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
+
+.side-menu .close-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 35px;
+    color: white;
+    cursor: pointer;
+}
+/* تحسين أنيميشن السايد منيو */
+.side-menu a {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.4s ease;
+}
+
+.side-menu.active a {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* توزيع توقيت الدخول لكل لينك */
+.side-menu.active a:nth-child(2) { transition-delay: 0.1s; }
+.side-menu.active a:nth-child(3) { transition-delay: 0.2s; }
+.side-menu.active a:nth-child(4) { transition-delay: 0.3s; }
+.side-menu.active a:nth-child(5) { transition-delay: 0.4s; }
+.side-menu.active a:nth-child(6) { transition-delay: 0.5s; }
+.side-menu.active a:nth-child(7) { transition-delay: 0.6s; }
+
+/* ================= الموبايل ================= */
+@media (max-width: 992px) {
+    .nav-links, .nav-spacer {
+        display: none;
+    }
+
+    .nav-container {
+        justify-content: space-between;
+    }
+
+    .nav-actions {
+        width: 100%;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        flex: 1;
+    }
+
+    .menu-btn {
+        display: block;
+        font-size: 26px;
+        color: white;
+        cursor: pointer;
+    }
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header, .hero, .card {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* تأخير بسيط للكروت عشان تظهر بعد الهيرو */
+.main-grid .card:nth-child(1) { animation-delay: 0.2s; }
+.main-grid .card:nth-child(2) { animation-delay: 0.4s; }
+.main-grid .card:nth-child(3) { animation-delay: 0.6s; }
+/* ================= شبكة الأقسام ================= */
+
+
+/* 4. الهيدر والمحتوى */
+header {
+    position: relative;
+    background-color: var(--dark-blue);
+    background-image: linear-gradient(135deg, rgba(3, 4, 94, 0.8), rgba(0, 119, 182, 0.8)), url('alson.png');
+    background-blend-mode: overlay;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: -40px auto 30px;
+    position: relative;
+    z-index: 5;
+}
+
+.info-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.grid-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-right: 5px solid var(--ocean-blue);
+}
+
+h2, h3 { color: var(--ocean-blue); }
+
+/* 5. القائمة الجانبية (Side Menu) */
+.side-menu {
+    height: 100vh;
+    width: 0;
+    position: fixed;
+    z-index: 2000;
+    top: 0; right: 0;
+    background-color: var(--dark-blue);
+    transition: 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px;
+    visibility: hidden;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+}
+
+.side-menu.active { width: 280px; visibility: visible; }
+
+.side-menu a {
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 20px;
+    text-align: right;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: 0.4s ease;
+}
+
+.side-menu.active a { opacity: 1; transform: translateX(0); }
+
+
+.lang-btn {
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    
+    /* الألوان والمقاسات (دمجناهم) */
+    background-color: #00B4D8;
+    color: #03045E;
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    font-weight: bold;
+    
+    /* التأثيرات والأنيميشن */
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 0 rgba(0, 180, 216, 0.4);
+    animation: pulse-blue 2s infinite;
+}
+
+/* تصحيح الـ Hover */
+.lang-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.7);
+    background-color: #0077B6; /* شلنا الـ # اللي كانت قبل الكلمة */
+    color: #03045E;
+}
+
+/* لازم تضيف تعريف النبض عشان يشتغل */
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 180, 216, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0); }
+}
+/* 6. الفوتر والواتساب */
+.main-footer {
+    background: var(--dark-blue);
+    color: white;
+    padding: 60px 10% 20px;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.whatsapp-float {
+    position: fixed;
+    width: 60px; height: 60px;
+    bottom: 20px; left: 20px;
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    z-index: 10000;
+    transition: 0.3s;
+}
+
+.whatsapp-float:hover { transform: scale(1.1); }
+
+/* 7. استجابة الموبايل (Responsive) - تم توحيدها */
+@media (max-width: 992px) {
+    .nav-links, .nav-spacer { display: none; }
+    .nav-actions { width: 100%; justify-content: space-between; flex-direction: row-reverse; }
+    .menu-btn { display: block; color: white; font-size: 26px; cursor: pointer; }
+    header { padding: 60px 10px; }
+    header h1 { font-size: 1.5rem; }
+    .container { margin-top: -20px; }
+    .grid-info { grid-template-columns: 1fr; }
+}
+
+.footer-section h4 {
+
+    color: var(--sky-blue);
+
+    font-size: 1.2rem;
+
+    margin-bottom: 20px;
+
+    position: relative;
+
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--sky-blue);
+}
+
+[lang="en"] .footer-section h4::after {
+    right: auto;
+    left: 0;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+
+
+.footer-section ul li a {
+
+    color: #ccc;
+
+    text-decoration: none;
+
+    transition: 0.3s;
+
+}
+
+
+
+.footer-section ul li a:hover {
+    color: white;
+    padding-inline-start: 10px;
+}
+
+.contact-info-footer p {
+    margin: 15px 0;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-info-footer a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.copyright {
+    text-align: center;
+    padding-top: 25px;
+    font-size: 0.9rem;
+    color: #888;
+}
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="nav-spacer"></div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="home.html">الرئيسية</a></li>
+            <li><a href="history.html">تاريخنا</a></li>
+            <li><a href="services.html">الخدمات</a></li>
+            <li><a href="result.html">ملفك الشخصي</a></li>
+            <li><a href="news.html">الأخبار</a></li>
+            <li><a href="contact.html">تواصل معنا</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="lang-btn" id="btn-text" onclick="toggleLang()">English</button>
+            <span class="menu-btn" onclick="toggleMenu()">☰</span>
+        </div>
+    </div>
+</nav>
+
+<div class="side-menu" id="sideMenu">
+    <span class="close-btn" onclick="toggleMenu()">×</span>
+    <a href="home.html">الرئيسية</a>
+    <a href="history.html">تاريخنا</a>
+    <a href="services.html">الخدمات</a>
+    <a href="result.html">ملفك الشخصي</a>
+    <a href="news.html">الأخبار</a>
+    <a href="contact.html">تواصل معنا</a>
+</div>
+
+<header>
+    <h1 data-ar="مسيرة الألسن الأزهرية" data-en="Al-Alson Azhari Journey">مسيرة الألسن الأزهرية</h1>
+    <p data-ar="عراقة المنهج الأزهري.. وطموح اللغات العالمي" data-en="Authentic Azhari Heritage.. Global Language Ambition"></p>
+</header>
+
+<div class="container">
+    <div class="info-section">
+        <h2 data-ar="عن المدرسة" data-en="About the School">عن المدرسة</h2>
+        <p data-ar="تأسست المدرسة في العام الدراسي 2018–2019 لتكون صرحاً يجمع بين العلوم الشرعية واللغات (الإنجليزية، الفرنسية، والألمانية). اختيار اسم 'الألسن' يعكس اهتمامنا ببناء جسور التواصل الثقافي." 
+           data-en="The school was founded in 2018–2019 to be an edifice combining Sharia sciences and modern languages. The name 'Al-Alson' reflects our commitment to cultural communication."></p>
+    </div>
+
+    <div class="grid-info">
+        <div class="card">
+            <h3 data-ar="📍 الموقع" data-en="📍 Location">📍 الموقع</h3>
+            <p data-ar="39 شارع علي فهمي – نزلة البطران – المريوطية – الهرم – الجيزة." 
+               data-en="39 Ali Fahmy St – Nazlet El Batran – Marioutia – Haram – Giza."></p>
+        </div>
+
+        <div class="card">
+            <h3 data-ar="🎓 المراحل التعليمية" data-en="🎓 Academic Stages">🎓 المراحل التعليمية</h3>
+            <p data-ar="من التمهيدي (KG) حتى الإعدادية والثانوية، مع تدريس اللغة الثانية من KG1." 
+               data-en="From Preschool (KG) to Secondary, teaching the second language from KG1."></p>
+        </div>
+
+        <div class="card">
+            <h3 data-ar="📖 المنهج" data-en="📖 Curriculum">📖 المنهج</h3>
+            <p data-ar="منهج لغات متكامل + تحفيظ القرآن الكريم ودروس أخلاقية." 
+               data-en="Integrated language curriculum + Quran memorization and ethics lessons."></p>
+        </div>
+    </div>
+
+    <div class="info-section" style="margin-top: 25px;">
+        <h2 data-ar="لماذا نحن؟" data-en="Why Us?">لماذا نحن؟</h2>
+        <ul>
+            <li data-ar="دمج التعليم الأزهري مع أحدث أنظمة اللغات." data-en="Integrating Azhari education with modern language systems."></li>
+            <li data-ar="بيئة تعليمية مجهزة تقنياً ورياضياً." data-en="Technologically and athletically equipped environment."></li>
+            <li data-ar="التركيز على القيم الأخلاقية والصدق في التعامل." data-en="Emphasis on moral values and honesty."></li>
+        </ul>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h4 data-ar="مدرسة الألسن" data-en="Al-Alson School">مدرسة الألسن</h4>
+            <p data-ar="نحن نلتزم بتقديم تعليم أزهري لغات متميز يجمع بين الأصالة والحداثة في بيئة تربوية آمنة." 
+               data-en="We are committed to providing distinguished Azhari language education in a safe environment."></p>
+        </div>
+
+        <div class="footer-section">
+            <h4 data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</h4>
+            <ul>
+                <li><a href="home.html" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
+                <li><a href="history.html" data-ar="تاريخنا" data-en="Our History">تاريخنا</a></li>
+                <li><a href="services.html" data-ar="الخدمات" data-en="Services">الخدمات</a></li>
+                <li><a href="result.html" data-ar="ملفك الشخصي" data-en="Services">ملفك الشخصي</a></li>
+                <li><a href="news.html" data-ar=" الأخبار" data-en="news"> الأخبار</a></li>
+                <li><a href="contact.html" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section contact-info-footer">
+            <h4 data-ar="تواصل مباشر" data-en="Direct Contact">تواصل مباشر</h4>
+            <p>📍 <span data-ar="39 شارع علي فهمي – المريوطية – الهرم" data-en="39 Ali Fahmy St – Marioutia – Haram"></span></p>
+            <p>📞 <a href="tel:+2001001515779">01001515779</a></p>
+            <p>📧 hr.alalsonazharils@gmail.com</p>
+        </div>
+    </div>
+
+
+    <a href="https://wa.me/201234567890" class="whatsapp-float" target="_blank">
+    <svg width="35" height="35" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.06 3.973L0 16l4.135-1.086c1.17.637 2.483.974 3.823.974h.004c4.368 0 7.926-3.558 7.93-7.926a7.898 7.898 0 0 0-2.326-5.602zM7.994 14.52a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.335-0.94.165-.46.165-.856.115-.94-.05-.084-.183-.133-.38-.232z"/>
+    </svg>
+</a>
+
+
+
+    <div class="copyright">
+        <p data-ar="&copy; 2030 مدرسة الألسن الأزهري - جميع الحقوق محفوظة" 
+           data-en="&copy; 2030 Al-Alson Azhari School - All Rights Reserved"></p>
+    </div>
+</footer>
+
+<script>
+    function updateLang() {
+        const html = document.getElementById('main-html');
+        const lang = html.getAttribute('lang');
+        const elements = document.querySelectorAll('[data-ar], [data-en]');
+
+        elements.forEach(el => {
+            el.innerText = lang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+        });
+    }
+
+    function toggleLang() {
+        const html = document.getElementById('main-html');
+        const btn = document.getElementById('btn-text');
+
+        if(html.getAttribute('lang') === 'ar') {
+            html.setAttribute('lang', 'en');
+            html.setAttribute('dir', 'ltr');
+            btn.innerText = 'العربية';
+        } else {
+            html.setAttribute('lang', 'ar');
+            html.setAttribute('dir', 'rtl');
+            btn.innerText = 'English';
+        }
+        updateLang();
+    }
+    window.onload = updateLang;
+    function toggleMenu() {
+    const menu = document.getElementById("sideMenu");
+    menu.classList.toggle("active");
+}
+</script>
+
+</body>
+</html>
